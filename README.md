@@ -2,6 +2,8 @@
 
 Mini framework web en Java (sin dependencias externas) que permite registrar servicios HTTP GET mediante funciones lambda, servir archivos estáticos y desplegarse en la nube con configuración externalizada. Desarrollado como parte del laboratorio *"Building and Deploying a Maintainable Application Server"*.
 
+# Alumna: Keyla Yunuette Serna Illescas
+
 ## Descripción del proyecto
 
 `WebFramework` evoluciona un servidor HTTP secuencial básico (que originalmente tenía las rutas dinámicas escritas a mano dentro del bucle de conexión) hacia un pequeño framework de aplicación reutilizable. Un desarrollador que use el framework puede registrar nuevas rutas GET con una lambda, sin tocar el código de manejo de sockets ni el ciclo de vida del servidor.
@@ -107,7 +109,7 @@ src/main/resources/
 
 ## Cómo compilar y ejecutar localmente
 
-Requisitos: JDK 21+ y Maven.
+Requisitos: JDK 17+ y Maven.
 
 ```bash
 git clone https://github.com/KeySerna/WebFramework.git
@@ -162,11 +164,11 @@ No se manejan credenciales ni tokens; ninguna variable sensible se commitea al r
 1. Lanzar una instancia EC2 (Amazon Linux 2023) desde AWS Academy Learner Lab.
 2. En el Security Group de la instancia, abrir el puerto que usará la app (por ejemplo `8080`) a entrada desde `0.0.0.0/0`.
 3. Conectarse por SSH a la instancia.
-4. Instalar Java y Git (Amazon Linux 2023 trae `dnf`):
+4. Instalar Java, Git y Maven (Amazon Linux 2023 trae `dnf`):
    ```bash
-   sudo dnf install -y java-21-amazon-corretto git
+   sudo dnf install -y java-17-amazon-corretto git maven
    ```
-5. (Opcional si se compila en la instancia) Instalar Maven, o compilar localmente y subir solo `target/classes`.
+5. Verificar que quedaron instalados: `java -version`, `git --version`, `mvn -version`.
 6. Clonar el repositorio (mismo código fuente que en local):
    ```bash
    git clone https://github.com/KeySerna/WebFramework.git
@@ -187,20 +189,22 @@ No se manejan credenciales ni tokens; ninguna variable sensible se commitea al r
 9. Confirmar que `/shutdown` **no** está disponible en producción (debe responder `404 Not Found`), ya que `APP_ENV=production`.
 10. Al finalizar la evaluación, limpiar los recursos de AWS (terminar la instancia).
 
-**Plataforma usada:** AWS EC2 (AWS Academy Learner Lab).
+**Plataforma usada:** AWS EC2 (AWS Academy Learner Lab), instancia Amazon Linux 2023.
 
-**URL pública de despliegue:** `http://<IP_PUBLICA>:<PORT>/` _(completar después del despliegue)_
+**URL pública de despliegue:** `http://107.22.113.163:8080/`
 
-### URLs de ejemplo (reemplazar `<IP_PUBLICA>` tras desplegar)
+> Nota: esta IP pública pertenece a una instancia temporal de AWS Academy Learner Lab y cambia cada vez que se reinicia el laboratorio. Si el enlace ya no responde al momento de revisar la entrega, vuelve a seguir los pasos de esta sección para levantar una nueva instancia.
+
+### URLs de ejemplo
 
 | Recurso | URL |
 |---|---|
-| Página principal | `http://<IP_PUBLICA>:8080/` |
-| Recurso estático (JS) | `http://<IP_PUBLICA>:8080/app.js` |
-| Recurso estático (imagen) | `http://<IP_PUBLICA>:8080/images/logo.png` |
-| Endpoint REST 1 | `http://<IP_PUBLICA>:8080/hello?name=Keysi` |
-| Endpoint REST 2 | `http://<IP_PUBLICA>:8080/pi` |
-| Endpoint REST 3 | `http://<IP_PUBLICA>:8080/square?value=5` |
+| Página principal | `http://107.22.113.163:8080/` |
+| Recurso estático (JS) | `http://107.22.113.163:8080/app.js` |
+| Recurso estático (imagen) | `http://107.22.113.163:8080/images/logo.png` |
+| Endpoint REST 1 | `http://107.22.113.163:8080/hello?name=Keysi` |
+| Endpoint REST 2 | `http://107.22.113.163:8080/pi` |
+| Endpoint REST 3 | `http://107.22.113.163:8080/square?value=5` |
 
 ## Pruebas realizadas
 
@@ -217,14 +221,29 @@ No se manejan credenciales ni tokens; ninguna variable sensible se commitea al r
 
 ## Evidencia del despliegue en la nube
 
-_(Agregar aquí, tras el despliegue en AWS)_
+**Página principal cargando desde la IP pública de EC2:**
 
-- Captura de la página principal cargando desde la IP pública.
-- Captura de un recurso estático (por ejemplo la imagen) cargando desde la IP pública.
-- Captura de al menos dos respuestas de endpoints REST (`/hello`, `/pi` o `/square`) desde la IP pública.
-- Captura de las variables de entorno configuradas en la instancia (sin exponer nada sensible), por ejemplo la salida de `printenv | grep -E "PORT|APP_ENV|GREETING_PREFIX"`.
-- Evidencia de que `/shutdown` funciona localmente en desarrollo.
-- Evidencia de que `/shutdown` responde 404 en la instancia de producción.
+![Página principal en AWS](evidencia/pagina-principal.png)
+
+**Endpoint REST `/hello` respondiendo en producción:**
+
+![Endpoint /hello](evidencia/endpoint-hello.png)
+
+**Endpoint REST `/pi` respondiendo en producción:**
+
+![Endpoint /pi](evidencia/endpoint-pi.png)
+
+**Variables de entorno configuradas en la instancia (sin exponer nada sensible):**
+
+![Variables de entorno](evidencia/variables-entorno.png)
+
+**`/shutdown` deshabilitado en producción (`APP_ENV=production` → 404 Not Found):**
+
+![/shutdown en producción da 404](evidencia/shutdown-produccion-404.png)
+
+**`/shutdown` funcionando en local con `APP_ENV=development` (apagado grácil):**
+
+![/shutdown en desarrollo](evidencia/shutdown-local-dev.png)
 
 ## ¿Por qué esta arquitectura es mantenible?
 
