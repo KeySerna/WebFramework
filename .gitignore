@@ -1,3 +1,7 @@
 target/
-nbproject/private/
 *.class
+.idea/
+nbproject/private/
+*.log
+.env
+*.iml
